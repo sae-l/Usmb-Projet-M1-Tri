@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block head %}
+<title>Configuration des Machines</title>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/jquery.sortElements.js"></script>
+{% endblock %}
+{% block body %}
+
+<h1 class="h1 text-dark">Configuration des Machines</h1>
+<input class="form-control" id="myInput" type="text" placeholder="Rechercher...">
+<br>
+<div class=table-scroll>
+<table class=" display table table-bordered table-light table-sm table-hover">
+    <thead class="thead-dark">
+    <tr>
+        <th rowspan="2" scope="col" id="name_header">Nom <ion-icon name="arrow-round-up"></ion-icon><ion-icon name="arrow-round-down"></ion-icon></th>
+        <th rowspan="2" scope="col" id="firstname_header">Prenom <ion-icon name="arrow-round-up"></ion-icon><ion-icon name="arrow-round-down"></ion-icon></th>
+        <th rowspan="2" scope="col" id="uid_header" >Uid <ion-icon name="arrow-round-up"></ion-icon><ion-icon name="arrow-round-down"></ion-icon></th>
+        <th rowspan="2" scope="col" id="classe_header">Classe <ion-icon name="arrow-round-up"></ion-icon><ion-icon name="arrow-round-down"></ion-icon></th>
+        <th rowspan="2" scope="col">Groupe</th>
+        <th scope="col" colspan="6">Machines Virtuelles</th>
+    </tr>
+    <tr>
+        <th scope="col" id="server_header">Serveur <ion-icon name="arrow-round-up"></ion-icon><ion-icon name="arrow-round-down"></ion-icon></th>
+        <th scope="col" id="server_name_header">Nom <ion-icon name="arrow-round-up"></ion-icon><ion-icon name="arrow-round-down"></ion-icon></th>
+        <th scope="col" id="MAC_header">Adresse Mac <ion-icon name="arrow-round-up"></ion-icon><ion-icon name="arrow-round-down"></ion-icon></th>
+        <th scope="col" id="IP_header">Adresse IP <ion-icon name="arrow-round-up"></ion-icon><ion-icon name="arrow-round-down"></ion-icon></th>
+        <th scope="col" onclick="sortTable(9)">Port RDP</th>
+        <th scope="col">Commentaire</th>
+    </tr>
+    </thead>
+    <tbody id="myTable">
+        {% for user in users %}
+            <tr>
+                {% for vm in user.machines_Virtuelles%}
+                    <td>{{user.nom }}</td>
+                    <td>{{user.prenom }}</td>
+                    <td>{{user.uid}}</td>
+                    <td>{{user.classe}}</td>
+                    <td>{{user.groupe}}</td>
+                    <td>{{vm.serveurs.nom}}</td>
+                    <td>{{vm.nom}}</td>
+                    <td>{{vm.adresse_MAC}}</td>
+                    <td>{{vm.adresse_IP}}</td>
+                    <td>{{vm.port_RDP}}</td>
+                    <td>{{vm.commentaire}}</td>
+                {%endfor%}
+            </tr>
+        {%endfor%}
+    </tbody>
+</table></div>
+</div>
+<script>
+    var table = $('table');
+    
+    $('#name_header, #firstname_header, #uid_header,#classe_header,#server_header,#server_name_header,#MAC_header,#IP_header')
+        .wrapInner('<span title="sort this column"/>')
+        .each(function(){
+            
+            var th = $(this),
+                thIndex = th.index(),
+                inverse = false;
+            
+            th.click(function(){
+                
+                table.find('td').filter(function(){
+                    
+                    return $(this).index() === thIndex;
+                    
+                }).sortElements(function(a, b){
+                    
+                    return $.text([a]) > $.text([b]) ?
+                        inverse ? -1 : 1
+                        : inverse ? 1 : -1;
+                    
+                }, function(){
+                    
+                    // parentNode is the element we want to move
+                    return this.parentNode; 
+                    
+                });
+                
+                inverse = !inverse;
+                    
+            });
+                
+        });
+
+</script>
+<script>
+    $(document).ready(function(){
+      $("#myInput").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#myTable tr").filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+      });
+    });
+</script>
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+{% endblock %}

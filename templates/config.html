@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block head %}
+<title>Configuration</title>
+<script src="/static/js/jquery.min.js"></script>
+{% endblock %}
+
+{% block body %}
+<h1>Configuration</h1>
+<form action="/traitconf" method="POST">
+    <div class="row">
+        <div class="col-4 col-sm">
+            <div class="list-group" id="list-tab" role="tablist">
+                {% for item in data %}
+                    {%if not loop.first%}
+                <a class="list-group-item list-group-item-action" id="list-{{item[0]}}-list" data-toggle="list" href="#list-{{item[0]}}" role="tab" aria-controls="{{item[0]}}">{{item[0]}}</a>
+                    {%endif%}
+                {%endfor%}
+            </div>
+        </div>
+    
+    <div class="col-8 col-sm">
+        <div class="tab-content" id="nav-tabContent">
+            {% for item in data %}
+                {%if not loop.first%}
+                <div class="tab-pane fade" id="list-{{item[0]}}" role="tabpanel" aria-labelledby="list-{{item[0]}}-list">
+                    {% for section in item[1] %}
+                        <p>{{section[0]}} : <input name={{item[0]}}.{{section[0]}} placeholder={{section[1]}} value={{section[1]}}></input></p>
+                    {%endfor%}
+                </div>
+                {%endif%}
+            {%endfor%}
+            </div>
+          </div>
+    </div>
+    <br>
+    <input type="submit" value="Enregistrer"/>
+    </form>
+</div>
+
+{% endblock %}
+
+

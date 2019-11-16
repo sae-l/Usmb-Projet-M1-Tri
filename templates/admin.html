@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block head %}
+<title>Configuration</title>
+{% endblock %}
+
+{% block body %}
+<h1>Administration</h1>
+<form action="/add_users" method="POST">
+    <p>serveur:{{data[0][1] }}</p>
+    <label>mdp de {{data[1][1] }}
+        <input type="password" name="pwd" class="form-control" required="true"> 
+    </label>
+    <input type="submit" value="Ajouter les utilisateurs"/>
+</form>
+{% endblock %}

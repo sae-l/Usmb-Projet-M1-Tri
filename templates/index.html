@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block head %}
+<title>Configuration des Machines</title>
+{% endblock %}
+{% block body %}
+
+<h1 class="h1 text-dark">Configuration des Machines</h1>
+<input class="form-control" id="myInput" type="text" placeholder="Rechercher...">
+<br>
+<div class=table-scroll>
+<table  class="table table-bordered table-light table-sm table-hover">
+    <thead class="thead-dark">
+    <tr>
+        <th rowspan="2" scope="col">Nom</th>
+        <th rowspan="2" scope="col">Prenom</th>
+        <th rowspan="2" scope="col">Uid</th>
+        <th rowspan="2" scope="col">Classe</th>
+        <th rowspan="2" scope="col">Groupe</th>
+        <th scope="col" colspan="6">Machines Virtuelles</th>
+    </tr>
+    <tr>
+        <th scope="col">Serveurs</th>
+        <th scope="col">Nom</th>
+        <th scope="col">Adresse Mac</th>
+        <th scope="col">Adresse IP</th>
+        <th scope="col">Port RDP</th>
+        <th scope="col">Commentaire</th>
+    </tr>
+    </thead>
+    <tbody id="myTable">
+        {% for user in users %}
+            <tr>
+                <td rowspan="{{ user.serveurs|length }}">{{ user.nom }}</td>
+                <td rowspan="{{ user.serveurs|length }}">{{ user.prenom }}</td>
+                <td rowspan="{{ user.serveurs|length }}">{{ user.uid}}</td>
+                <td rowspan="{{ user.serveurs|length }}">{{ user.classe}}</td>
+                <td rowspan="{{ user.serveurs|length }}">{{ user.groupe}}</td>
+                {% for serveur in user.serveurs %}
+                {% if not loop.first%}<tr>{% endif %}
+                    <td>{{serveur.nom}}</td>
+                    {% for vm in user.machines_Virtuelles%}
+                        {% if vm.serveurs.nom == serveur.nom %}
+                            <td>{{vm.nom}}</td>
+                            <td>{{vm.adresse_MAC}}</td>
+                            <td>{{vm.adresse_IP}}</td>
+                            <td>{{vm.port_RDP}}</td>
+                            <td>{{vm.commentaire}}</td>
+                        {% else %}
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        {% endif %}
+                    {%endfor%}
+                {% if not loop.first%}</tr>{% endif %}
+                {%endfor%}
+            </tr>
+        {%endfor%}
+        <tr><td>a</td>            <td></td>            <td></td>          <td></td><td></td></tr>        <tr><td>a</td>            <td></td>            <td></td>          <td></td><td></td></tr>
+        <tr><td>a</td>            <td></td>            <td></td>          <td></td><td></td></tr>
+        <tr><td>a</td>            <td></td>            <td></td>          <td></td><td></td></tr>
+        <tr><td>a</td>            <td></td>            <td></td>
+        <tr><td>a</td>            <td></td>            <td></td>          <td></td><td></td></tr>
+        <tr><td>a</td>            <td></td>            <td></td>          <td></td><td></td></tr>
+        <tr><td>a</td>            <td></td>            <td></td>          <td></td><td></td></tr>
+        <tr><td>a</td>            <td></td>            <td></td>          <td></td><td></td></tr>
+        <tr><td>a</td>            <td></td>            <td></td>          <td></td><td></td></tr>
+        <tr><td>a</td>            <td></td>            <td></td>          <td></td><td></td></tr>
+        <tr><td>a</td>            <td></td>            <td></td>          <td></td><td></td></tr>
+        <tr><td>a</td>            <td></td>            <td></td>          <td></td><td></td></tr>
+        <tr><td>a</td>            <td></td>            <td></td>          <td></td><td></td></tr>
+
+    </tbody>
+</table></div>
+</div>
+<script>
+    $('th').click(function(){
+        var table = $(this).parents('table').eq(0)
+        var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
+        this.asc = !this.asc
+        if (!this.asc){rows = rows.reverse()}
+        for (var i = 0; i < rows.length; i++){table.append(rows[i])}
+    })
+    function comparer(index) {
+        return function(a, b) {
+            var valA = getCellValue(a, index), valB = getCellValue(b, index)
+            return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB)
+        }
+    }
+    function getCellValue(row, index){ return $(row).children('td').eq(index).text() }
+</script>
+<script>
+    $(document).ready(function(){
+      $("#myInput").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#myTable tr").filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+      });
+    });
+</script>
+
+{% endblock %}
+
+
