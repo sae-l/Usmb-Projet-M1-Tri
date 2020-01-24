@@ -3,8 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sqlite.db'
+app.config['WTF_CSRF_SECRET_KEY'] = 'blabla bla ma clef'
+app.config['LDAP_PROTOCOL_VERSION'] = 3
 
 db = SQLAlchemy(app)
+app.secret_key = 'some_random_key'
+
 
 user_serv = db.Table('user_serv',
     db.Column('utilisateurs_id', db.Integer, db.ForeignKey('utilisateurs.id')),
@@ -20,7 +24,7 @@ class Utilisateurs(db.Model):
     classe=db.Column(db.Text,nullable=False)
     groupe=db.Column(db.String(10))
     machines_Virtuelles = db.relationship('Machines_Virtuelles', backref='utilisateurs', lazy=True)
-    serveurs = db.relationship('Serveurs', secondary=user_serv, lazy='subquery',backref=db.backref('utilisateurs', lazy=True))
+    serveurs = db.relationship('Serveurs', viewonly=True, secondary=user_serv, lazy='subquery',backref=db.backref('utilisateurs', lazy=True))
 
 class Serveurs(db.Model):
     __tablename__ = 'serveurs'

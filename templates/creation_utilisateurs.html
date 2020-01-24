@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block head %}
+<title>Création des utilisateurs</title>
+{% endblock %}
+
+{% block body %}
+<h1>Création des utilisateurs</h1>
+<form action="/ajouter_utilisateurs" method="POST" enctype="multipart/form-data">
+    {{ form.csrf_token }}
+    <p>La requête ldap sur le serveur "<b>{{data[0][1]}}</b>" se fera sous l'uid <b>{{ session['username'] }}</b></p>
+    <label>Mot de passe :</label>
+    <input type="password" name="pwd" class="form-control" required="true"> 
+    <!--<div id="groupeadd">
+        <label>Nom du groupe n°1
+            <input type="text" name="grp1" class="form-control" required="true"> 
+        </label>
+        <label>
+            <input type="file" name="grp1" accept=".xls,.xlsx"/>
+        </label>
+        <label>
+            <input type="button" class="groupaddbutton" value="Ajouter groupe"/>
+        </label>
+    </div>-->
+    {% for options in data2 %}
+    <label>{{options[1]}}
+        <input type="file" name={{options[1]}} accept=".xls,.xlsx" required/>
+    </label>
+    <br/>
+    {%endfor%}
+    <br/>
+    <input class="btn btn-outline-success btn-block"type="submit" value="Ajouter les utilisateurs"/>
+</form>
+<script>
+    /*$(document).ready(function() {
+        var wrapper = $("#groupeadd");
+        var add_button = $(".groupaddbutton");
+
+        var x = 2;
+        $(add_button).click(function(e) {
+            var txt = '<div><label>Nom du groupe n°'+x+'<input type="text" name="grp" class="form-control" required="true"> </label><label><input type="file" name="grp" accept=".xls,.xlsx"/></label><label></label><input type="button" class="deletegroupbutton" value="Supprimer"/></div>'
+            e.preventDefault();
+            x++;
+            $(wrapper).append(txt);
+        });
+
+        $(wrapper).on("click", ".deletegroupbutton", function(e) {
+            e.preventDefault();
+            $(this).parent('div').remove();
+        })
+    });*/
+</script>
+{% endblock %}

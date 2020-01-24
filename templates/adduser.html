@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% block head %}
+<title>Validation Ajout Utilisateur</title>
+
+<script type="text/javascript" src="{{ url_for('static',filename='js/tableau.js') }}"></script>
+<style>
+    table.dataTable{border-collapse:collapse !important;}
+</style>
+
+{% endblock %}
+{% block body %}
+
+<h1 class="h1 text-dark">Validation Ajout Utilisateur</h1>
+<form action="/bonjour" method="POST">
+    {{ form.csrf_token }}
+    <input type="button" id="submittablebutton" value="Valider"/><br/>
+    <label id="selectalllabel">Tout Selectionner</label><input type="checkbox" id="selectall" value="Tout Selectionner"/>
+    <table id="tab" class=" display table table-sm table-light table-hover">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col" id="uid_header" >Uid </th>
+            <th scope="col" id="name_header">Nom </th>
+            <th scope="col" id="firstname_header">Prenom </th>
+            <th scope="col" id="classe_header">Groupe Classe</th>
+            <th scope="col" id="groupe_header">Groupe LDAP </th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for d in data %}
+            {%set c1 = loop.index0 %}
+                {% for part in d[1] %}
+                {%set c2 = loop.index0 %}
+                <tr>
+                    {% for p in part %}
+                        {% if p == '' %}
+                            <td><input type="text" name="changeddata{{c1}}{{c2}}"></td>
+                        {% else %}
+                            <td>{{p}}</td>
+                        {% endif %}
+                    {% endfor %}
+                    <td>{{d[0]}}</td>
+                </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+</form>
+
+
+<script>
+$(document).ready(function() {
+    var table = $('#tab').DataTable();
+
+    $('#selectall').click( function() {
+        if($(this)[0].checked){
+            $('#selectalllabel').text("Désélectionner Tout");
+            $('tr').addClass('table-primary');
+        } else {
+            $('#selectalllabel').text("Sélectionner Tout");
+            $('tr').removeClass('table-primary');
+        }
+    } );
+
+    $('#tab tbody').on( 'click', 'tr', function () {
+        $(this).toggleClass('table-primary');
+    } );
+
+    //['badair', 'Badai', 'Ryan', '']
+    /*
+    0: "<input type=\"text\" name=\"changeddata\">"
+    1: "Aime"
+    2: "Adrian"
+    3: "2"
+    4: "etudiants-l3-sts-sc-et-techno-tri"
+    */
+    $('#submittablebutton').click( function() {
+        var data = table.rows('.table-primary').data();
+        var changed = table.$('input');
+        const regex = /(changeddata)(\d+)/g;
+
+        var arr = [];
+        var arrSelectedName = [];
+        for(let i = 0; i < data.length; i++){
+            let elem = [];
+            let changeddata;
+            let changedId;
+            let bob = false;
+            
+            while ((changeddata = regex.exec(data[i])) !== null) {
+                if (changeddata.index === regex.lastIndex) {
+                    regex.lastIndex++;
+                }
+                
+                changeddata.forEach((match, groupIndex) => {
+                    if(groupIndex == 0){
+                        //console.log("Oui:" + match);
+                        //changedId = match;
+                        arrSelectedName[i] = match;
+                    }
+                });
+            }
+
+            for (let i = 0; i < changed.length; i++) {
+                if(arrSelectedName.indexOf(changed[i].name) > -1){
+                    //console.log(changed[i].value);
+                    changedId = changed[i].value;
+                }
+            }
+
+            elem = data[i];
+            console.log(bob);
+            
+            //Si c'est une valeur changée, alors on la rentre dans le tableau
+            for (let j = 0; j < elem.length; j++) {
+                let c = false;
+                if (regex.exec(elem[j]) !== null) {
+                    //console.log("toto" + j);
+                    c = true;
+                }
+                if (c) {
+                    console.log(changedId);
+                    if (changedId) {
+                        bob = true;
+                    }
+                    elem[j] = changedId;
+                    
+                    //elem.push(changedId);
+                    c = false;
+                }
+            }
+            
+            console.log(elem);
+            console.log(bob);
+            if(bob){
+                arr.push(elem);
+            }
+        }
+        //console.log(changed);
+
+        //console.log(arr.length + " VS " + arrSelectedName.length + " VS " + changed.length);
+        //console.log(arrSelectedName);
+        console.log(arr);
+        var json = JSON.stringify(arr);
+        console.log(json);
+        const xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("POST","/ajout_utilisateurs_bdd");
+        xmlhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded;charset=UTF-8");
+        xmlhttp.send(json);
+        //window.location = "/administration_utilisateurs";
+    } );
+} );
+
+</script>
+{% endblock %}

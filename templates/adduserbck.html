@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block head %}
+<title>Validation Ajout Utilisateur</title>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/jquery.sortElements.js"></script>
+<script src=" https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js "></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+
+
+{% endblock %}
+{% block body %}
+
+<h1 class="h1 text-dark">Validation Ajout Utilisateur</h1>
+<input class="form-control" id="myInput" type="text" placeholder="Rechercher...">
+<br>
+<div class=table-scroll>
+    <form action="/bonjour" method="POST">
+        {{ form.csrf_token }}
+        <input type="button" id="submittablebutton" value="Valider"/>
+        <table id="tableformsubmit" class=" display table table-bordered table-light table-sm table-hover">
+            <thead class="thead-dark">
+            <tr>
+                <th rowspan="2" scope="col" id="uid_header" >Uid <ion-icon name="arrow-round-up"></ion-icon><ion-icon name="arrow-round-down"></ion-icon></th>
+                <th rowspan="2" scope="col" id="name_header">Nom <ion-icon name="arrow-round-up"></ion-icon><ion-icon name="arrow-round-down"></ion-icon></th>
+                <th rowspan="2" scope="col" id="firstname_header">Prenom <ion-icon name="arrow-round-up"></ion-icon><ion-icon name="arrow-round-down"></ion-icon></th>
+                <th rowspan="2" scope="col" id="classe_header">Classe <ion-icon name="arrow-round-up"></ion-icon><ion-icon name="arrow-round-down"></ion-icon></th>
+                <th rowspan="2" scope="col" id="groupe_header">Groupe <ion-icon name="arrow-round-up"></ion-icon><ion-icon name="arrow-round-down"></ion-icon></th>
+                <th rowspan="2" scope="col">Import</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for d in data %}
+                    {% for part in d[1] %}
+                    <tr>
+                        {% for p in part %}
+                            {% if p == '' %}
+                                <td><input type="text" name={{p}}></td>
+                            {% else %}
+                                <td>{{p}}<input type="hidden" name={{p}} value={{p}}></td>
+                            {% endif %}
+                        {% endfor %}
+                        <td>{{d[0]}}<input type="hidden" name={{d[0]}} value={{d[0]}}></td>
+                        <td><input class="form-check" type="checkbox" name="import" value="check" checked/></td>
+                    </tr>
+                    {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+</div>
+
+
+<script>
+$(document).ready(function() {
+    $('#tableformsubmit').DataTable();
+} );
+</script>
+
+<script>
+    var table = $('table');
+    $('#name_header, #firstname_header, #uid_header,#classe_header,#server_header,#server_name_header,#MAC_header,#IP_header,#groupe_header')
+        .wrapInner('<span title="sort this column"/>')
+        .each(function(){
+            var th = $(this),
+                thIndex = th.index(),
+                inverse = false;
+            th.click(function(){
+                table.find('td').filter(function(){
+                    return $(this).index() === thIndex;
+                }).sortElements(function(a, b){
+                    return $.text([a]) > $.text([b]) ?
+                        inverse ? -1 : 1
+                        : inverse ? 1 : -1;
+                }, function(){
+                    return this.parentNode; 
+                });
+                inverse = !inverse;   
+            }); 
+        });
+</script>
+<script>
+    $(document).ready(function(){
+      $("#myInput").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#myTable tr").filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+      });
+    });
+</script>
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+{% endblock %}

@@ -1,4 +1,6 @@
 import configparser
+import hashlib
+import uuid
 
 class Conf:
     __p = ""
@@ -28,7 +30,7 @@ class Conf:
             section = sec[0]
             content = self.__config.items(section)
             tab.append([section, content])
-            print([section, content])
+            # print([section, content])
         return tab
     
     def readSection(self, section):
@@ -36,7 +38,7 @@ class Conf:
         section = section.upper()
         content = self.__config.items(section)
         for c in content:
-            print(c)
+            # print(c)
             tab.append(c)
         return tab
         
@@ -44,7 +46,7 @@ class Conf:
     def readOption(self, section, option):
         section = section.upper()
         value = self.__config.get(section, option)
-        print(value)
+        # print(value)
         return value
 
     def addSection(self, section):
@@ -62,6 +64,13 @@ class Conf:
         self.__config[section][option] = value
         self.__build()
 
+    def addOptionHash(self, section, option, value):
+        salt = uuid.uuid4().hex
+        hash_object = hashlib.sha256(salt.encode() + value.encode()).hexdigest() + ':' + salt
+        section = section.upper()
+        self.__config[section][option] = hash_object
+        self.__build()
+
     def deleteOption(self, section, option):
         section = section.upper()
         self.__config.remove_option(section, option)
@@ -76,9 +85,8 @@ class Conf:
         self.__config = configparser.ConfigParser()
 
         self.addSection('LDAP')
-        self.addOption('LDAP', 'ServeurLDAP', 'ldap-bourget.univ-smb.fr')
+        self.addOption('LDAP', 'Serveur_LDAP', 'ldap-bourget.univ-smb.fr')
         self.addOption('LDAP', 'Utilisateur_LDAP', 'default')
-        self.addOption('LDAP', 'Mdp_LDAP', 'hash-sha256-mdp')
 
         self.addSection('IP')
         self.addOption('IP', 'Adresse_ip_debut', '192.168.0.0')

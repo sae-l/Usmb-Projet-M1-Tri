@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block head %}
+    <title>Administration des Vms</title>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/tableau.js') }}"></script>
+    <style>
+        table.dataTable{border-collapse:collapse !important;}
+    </style>
+{% endblock %}
+{% block body %}
+<h1 class="h1 text-dark">Administration des Vms</h1>
+<table id="tab" class=" display table table-light compact table-sm table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th rowspan="2">Nom</th>
+            <th rowspan="2">Prenom</i></th>
+            <th rowspan="2">Uid</i></th>
+            <th rowspan="2">Classe</th>
+            <th rowspan="2">Groupe</th>
+            <th colspan="7">Machines Virtuelles</th>
+        </tr>
+        <tr>
+            <th>Serveur</th>
+            <th>Nom</th>
+            <th>Adresse Mac</th>
+            <th>Adresse IP</th>
+            <th>Port RDP</th>
+            <th>Commentaire</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+            {% for vm in user.machines_Virtuelles%}
+                <tr>
+                    <td>{{user.nom }}</td>
+                    <td>{{user.prenom }}</td>
+                    <td>{{user.uid}}</td>
+                    <td>{{user.classe}}</td>
+                    <td>{{user.groupe}}</td>
+                    <td>{{vm.serveurs.nom}}</td>
+                    <td>{{vm.nom}}</td>
+                    <td>{{vm.adresse_MAC}}</td>
+                    <td>{{vm.adresse_IP}}</td>
+                    <td>{{vm.port_RDP}}</td>
+                    <td>{{vm.commentaire}}</td>
+                    <td>
+                        <form action="/supprimer_vm" method="POST">{{ form.csrf_token }}<input type="hidden" name="nom" value="{{vm.nom}}"><input class="btn btn-outline-danger btn-sm btn-block" type=submit value="Supprimer VM"></form>                    
+
+                    </td>
+                </tr>
+            {%endfor%}
+        {%endfor%}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block head %}
+<title>Configuration</title>
+{% endblock %}
+
+{% block body %}
+<h1>Configuration</h1>
+<form action="/traitconf" method="POST">
+    <div class="row">
+        <div class="col-4 col-sm">
+            <div class="list-group" id="list-tab" role="tablist">
+                {% for item in data %}
+                    {%if not loop.first%}
+                <a class="list-group-item list-group-item-action" id="list-{{item[0]}}-list" data-toggle="list" href="#list-{{item[0]}}" role="tab" aria-controls="{{item[0]}}">{{item[0]}}</a>
+                    {%endif%}
+                {%endfor%}
+            </div>
+        </div>
+    
+    <div class="col-8 col-sm">
+        <div class="tab-content" id="nav-tabContent">
+            {% for item in data %}
+                {%if not loop.first%}
+                <div class="tab-pane fade" id="list-{{item[0]}}" role="tabpanel" aria-labelledby="list-{{item[0]}}-list">
+                    {% for section in item[1] %}
+                        <p>{{section[0]}} : <input name={{item[0]}}.{{section[0]}} placeholder={{section[1]}} value={{section[1]}} required></p>
+                    {%endfor%}
+                </div>
+                {%endif%}
+            {%endfor%}
+            </div>
+          </div>
+    </div>
+    <br>
+    <input type="submit" class="btn btn-info" value="Enregistrer"/>
+    </form>
+    <br>
+    <ul class="nav nav-tabs nav-fill" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link" id="add_groupe-tab" data-toggle="tab" href="#add_groupe" role="tab" aria-controls="Ajouter un Groupe" aria-selected="true">Ajouter un Groupe</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="del_groupe-tab" data-toggle="tab" href="#del_groupe" role="tab" aria-controls="Supprimer un Groupe" aria-selected="false">Supprimer un Groupe</a>
+        </li>
+        <li class="nav-item">    
+            <a class="nav-link" id="add_serveur-tab" data-toggle="tab" href="#add_serveur" role="tab" aria-controls="Ajouter un Serveur" aria-selected="false">Ajouter un Serveur</a>
+        </li>
+        <li class="nav-item">    
+                <a class="nav-link" id="del_serveur-tab" data-toggle="tab" href="#del_serveur" role="tab" aria-controls="Supprimer un Serveur" aria-selected="false">Supprimer un Serveur</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade" id="add_groupe" role="tabpanel" aria-labelledby="add_groupe-tab">
+            <form action="/ajouter_groupe" method="POST">
+                <div class="form-group col-md-4">
+                    <br>
+                    Penser ensuite à rajouter le nom du groupe dans la <b>section groupes</b>, celui-ci doit correspondre à un nom d'un <b>groupe présent sur le ldap</b> agalan, attention <b>sensible à la case</b>.
+                    <br><br>
+                    <button type="submit" class="btn btn-success">Ajouter un groupe</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="tab-pane fade" id="del_groupe" role="tabpanel" aria-labelledby="del_groupe-tab">
+            <form action="/supprimer_groupe" method="POST">
+                <div class="form-group col-md-4">
+                    <br>
+                    {% for groupe in groupes%}
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="Radios" id="{{groupe[0]}}" value="{{groupe[0]}}" required>
+                            <label class="form-check-label" for="{{groupe[0]}}">{{groupe[0]}}</label>
+                        </div>
+                    {%endfor%}
+                    <br>
+                    <button type="submit" class="btn btn-danger"  onclick="return confirm('Etes-vous certain de la suppression?');">Supprimer le groupe</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="tab-pane fade" id="add_serveur" role="tabpanel" aria-labelledby="add_serveur-tab">
+            <form action="/ajouter_serveur" method="POST">
+                <div class="form-group col-md-4">
+                    <br>
+                    <label for="text" >Nom :</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" name="nom_serveur" placeholder="Nom" aria-label="Nom" aria-describedby="basic-addon2" required>
+                        <div class="input-group-append">
+                            <span class="input-group-text" id="basic-addon2">.local.univ-savoie.fr</span>
+                        </div>
+                    </div>
+                    <br>
+                    <button type="submit" class="btn btn-success">Ajouter le serveur</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="tab-pane fade" id="del_serveur" role="tabpanel" aria-labelledby="del_serveur-tab">
+            <form action="/supprimer_serveur" method="POST">
+                <div class="form-group col-md-4">
+                    <br>
+                    <b>Attention toute les vms</b> presente sur le serveur seront <b>supprimés</b>.
+                    <br><br>
+                    {% for serveur in serveurs%}
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="Radios" id="{{serveur.id}}" value="{{serveur.id}}" required>
+                            <label class="form-check-label" for="{{serveur[0]}}">serveur {{serveur.id}}: {{serveur.nom}}</label>
+                        </div>
+                    {%endfor%}
+                    <br>
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Etes-vous certain de la suppression?');">Supprimer le serveur</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+
+
+{% endblock %}
+
+
