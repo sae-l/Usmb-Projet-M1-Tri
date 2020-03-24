@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% block head %}
+<title>Validation Ajout Utilisateur</title>
+
+<script type="text/javascript" src="{{ url_for('static',filename='js/tableau.js') }}"></script>
+<style>
+    table.dataTable{border-collapse:collapse !important;}
+</style>
+
+{% endblock %}
+{% block body %}
+
+
+<h1 class="h1 text-dark">Etudiants présents que dans le LDAP</h1>
+<form action="/bonjour" method="POST">
+    {{ form.csrf_token }}
+    <div class="form-check">
+    <input type="checkbox" class="form-check-input" id="selectallLDAP" value="Tout Selectionner"/><label class="form-check-label" id="selectalllabelLDAP"> Tout Selectionner</label>
+    </div>
+    <table id="LDAPtab" class=" display dtable table table-sm table-light table-hover">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col" id="uid_header" >UID </th>
+            <th scope="col" id="name_header">Nom </th>
+            <th scope="col" id="firstname_header">Prenom </th>
+            <th scope="col" id="classe_header">Groupe Classe</th>
+            <th scope="col" id="groupe_header">Groupe LDAP </th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for classe in inLdap %}
+                {% for groupe in classe %}
+                {% set i = loop.index0 %}
+                    {% if i != 0 %}
+                <tr class='LDAPtr'>
+                        {% for d in groupe %}
+                            {% if d == '' %}
+                            <td><input type="text" name="changeddata{{i}}"></td>
+                            {% else %}
+                                <td>{{d}}</td>
+                            {% endif %}
+                        {% endfor %}
+                        <td>{{classe[0][0]}}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+</form>
+<br>
+<h1 class="h1 text-dark">Etudiants présents que dans le Excel</h1>
+<form action="/bonjour" method="POST">
+    {{ form.csrf_token }}
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="selectallExcel" value="Tout Selectionner"/><label class="form-check-label" id="selectalllabelExcel"> Tout Selectionner</label>
+    </div>
+    <table id="Exceltab" class=" display dtable table table-sm table-light table-hover">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col" id="uid_header" >UID </th>
+            <th scope="col" id="name_header">Nom </th>
+            <th scope="col" id="firstname_header">Prenom </th>
+            <th scope="col" id="classe_header">Groupe Classe</th>
+            <th scope="col" id="groupe_header">Groupe LDAP </th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for classe in inExcel %}
+                {% for groupe in classe %}
+                {% set i = loop.index0 %}
+                    {% if i != 0 %}
+                <tr class='Exceltr'>
+                        {% for d in groupe %}
+                            {% if d == '' %}
+                            <td><input type="text" name="changeddata{{i}}"></td>
+                            {% else %}
+                                <td>{{d}}</td>
+                            {% endif %}
+                        {% endfor %}
+                        <td>{{classe[0][0]}}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+</form>
+<br>
+<h1 class="h1 text-dark">Etudiants présents dans les deux</h1>
+<form action="/" method="POST">
+    {{ form.csrf_token }}
+    <table id="lesDeuxtab" class=" display  dtable table table-sm table-light table-hover">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col" id="uid_header" >UID </th>
+            <th scope="col" id="name_header">Nom </th>
+            <th scope="col" id="firstname_header">Prenom </th>
+            <th scope="col" id="classe_header">Groupe Classe</th>
+            <th scope="col" id="groupe_header">Groupe LDAP </th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for classe in inLesDeux %}
+                {% for groupe in classe %}
+                {% set i = loop.index0 %}
+                    {% if i != 0 %}
+                <tr class='table-primary'>
+                        {% for d in groupe %}
+                            {% if d == '' %}
+                            <td><input type="text" name="changeddata{{i}}"></td>
+                            {% else %}
+                                <td>{{d}}</td>
+                            {% endif %}
+                        {% endfor %}
+                        <td>{{classe[0][0]}}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+</form>
+
+<form action="/ajout_utilisateurs_bdd" id="formValiderUserSecret" method="POST">
+    {{ form.csrf_token }}
+    <input type="hidden" name="data" id="json" value=""> 
+    Info connection Base Machine
+    login:<input type="text" name="user"/>
+    mot de passe:<input type="password" name="password"/>
+</form>
+<br>
+<input type="button" class="btn col-sm-2 btn-success" id="submittablebutton" value="Valider"/><br/>
+
+
+<script>
+$(document).ready(function() {
+    var ldaptable = $('#LDAPtab').DataTable();
+    var exceltable = $('#Exceltab').DataTable();
+    var lesDeuxtable = $('#lesDeuxtab').DataTable();
+
+
+    $('#selectallLDAP').click( function() {
+        if($(this)[0].checked){
+            $('#selectalllabelLDAP').text("Désélectionner Tout");
+            $('.LDAPtr').addClass('table-primary');
+        } else {
+            $('#selectalllabelLDAP').text("Sélectionner Tout");
+            $('.LDAPtr').removeClass('table-primary');
+        }
+    } );
+
+    $('#selectallExcel').click( function() {
+        if($(this)[0].checked){
+            $('#selectalllabelExcel').text("Désélectionner Tout");
+            $('.Exceltr').addClass('table-primary');
+        } else {
+            $('#selectalllabelExcel').text("Sélectionner Tout");
+            $('.Exceltr').removeClass('table-primary');
+        }
+    } );
+
+    $('#LDAPtab tbody').on( 'click', 'tr', function () {
+        $(this).toggleClass('table-primary');        
+    } );
+
+    $('#Exceltab tbody').on( 'click', 'tr', function () {
+        $(this).toggleClass('table-primary');
+    } );
+
+    //['badair', 'Badai', 'Ryan', '']
+    /*
+    0: "<input type=\"text\" name=\"changeddata\">"
+    1: "Aime"
+    2: "Adrian"
+    3: "2"
+    4: "etudiants-l3-sts-sc-et-techno-tri"
+    */
+    $('#submittablebutton').click( function() {
+        //Tableau à envoyer a la fin
+        var arrEtu = [];
+        //Cas du tableau "les deux"
+        var dataLesDeux = lesDeuxtable.rows('.table-primary').data();
+        
+        for (let i = 0; i < dataLesDeux.length; i++) {
+            arrEtu.push(dataLesDeux[i]);
+        }
+        
+        //Cas du tableau "LDAP"
+        var dataLDAP = ldaptable.rows('.table-primary').data();
+        const regexLDAP = /(changeddata)(\d+)/g;
+
+        let ok = false;
+        for (let i = 0; i < dataLDAP.length; i++) {
+            let change = '';
+            let tarr = [];
+            ok = false;
+
+            let m;
+            while ((m = regexLDAP.exec(dataLDAP[i][3])) !== null) {
+                if (m.index === regexLDAP.lastIndex) {
+                    regexLDAP.lastIndex++;
+                }
+                
+                m.forEach((match, groupIndex) => {
+                    if (groupIndex === 0) {
+                        if (document.getElementsByName(match)[0].value != '') {
+                            change = document.getElementsByName(match)[0].value;
+                        }
+                    }
+                });
+            }
+            for (let j = 0; j < dataLDAP[i].length; j++) {
+                if (change != '' && j == 3) {
+                    tarr.push(change);
+                    ok = true;
+                } else {
+                    tarr.push(dataLDAP[i][j]);
+                }
+            }
+            if(ok){
+                arrEtu.push(tarr);
+            }
+            
+        }
+
+        //Cas du tableau "Excel"
+        var dataExcel = exceltable.rows('.table-primary').data();
+        const regexExcel = /(changeddata)(\d+)/g;
+
+        let okExcel = false;
+        for (let k = 0; k < dataExcel.length; k++) {
+            let change = '';
+            let tarr = [];
+            okExcel = false;
+
+            let m;
+            while ((m = regexExcel.exec(dataExcel[k][0])) !== null) {
+                if (m.index === regexExcel.lastIndex) {
+                    regexExcel.lastIndex++;
+                }
+                
+                m.forEach((match, groupIndex) => {
+                    if (groupIndex === 0) {
+                        if (document.getElementsByName(match)[0].value != '') {
+                            change = document.getElementsByName(match)[0].value;
+                        }
+                    }
+                });
+            }
+            for (let l = 0; l < dataExcel[k].length; l++) {
+                if (change != '' && l == 0) {
+                    tarr.push(change);
+                    okExcel = true;
+                } else {
+                    tarr.push(dataExcel[k][l]);
+                }
+            }
+            if(okExcel){
+                arrEtu.push(tarr);
+            }
+            
+        }
+
+        var json = JSON.stringify(arrEtu);        
+
+        document.getElementById('json').value = json;
+        document.getElementById("formValiderUserSecret").submit(); 
+    } );
+} );
+
+</script>
+{% endblock %}

@@ -1,0 +1,37 @@
+version: '3'
+services:
+  nginx: 
+    image: nginx:latest
+    container_name: reverse_proxy_nginx
+    depends_on:
+      - flask
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./logs/:/logs/
+      - ./cache/:/cache/
+      - ./certs/:/certs/
+    networks:
+      - my-network
+    ports:
+      - 80:80
+      - 443:443
+
+  flask:
+      build:
+          context: ./
+          dockerfile: Dockerfile
+      image: python:latest
+      container_name: flask
+      volumes:
+          - ./code/:/code/
+      command: python /code/init_db.py
+      command: gunicorn --chdir "code" --workers=3 --bind=0.0.0.0:8000 wsgi:app
+      networks:
+          my-network:
+              aliases:
+                  - flask-app
+      expose:
+        - 8000
+
+networks:
+    my-network:

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block head %}
+<title>Modification des Vms</title>
+{% endblock %}
+
+{% block body %}
+<h1 class="h1 text-dark">Modification de Vm</h1>
+<form action="/modification_vm" method="POST">
+    {{form.csrf_token}}
+    <table id="tab" class=" display table table-light compact table-sm table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Serveur</th>
+                <th>Nom</th>
+                <th>Adresse Mac</th>
+                <th>Adresse IP</th>
+                <th>Port RDP</th>
+                <th>Commentaire</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <input type="hidden" name="id" placeholder="{{vm.id}}" value="{{vm.id}}" required>
+                <td><label> {{vm.serveurs.nom}} </label></td>
+                <td><input name="nom" pattern="^(\w{1,}-\w{1,}-\w{1,}-\d{1,})$" placeholder="{{vm.nom}}" value="{{vm.nom}}" required></td>
+                <td><input name="mac" pattern="^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$" placeholder="{{vm.adresse_MAC}}" value="{{vm.adresse_MAC}}" required></td>
+                <td><input name="ip" pattern="((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}$" placeholder="{{vm.adresse_IP}}" value="{{vm.adresse_IP}}" required></td>
+                <td><input name="rdp" type="number" min="1025" max="65665" placeholder="{{vm.port_RDP}}" value="{{vm.port_RDP}}" required></td>
+                <td><input name="com" placeholder="{{vm.commentaire}}" value="{{vm.commentaire}}" required></td>
+            </tr>
+        </tbody>
+    </table>
+    Info connection Base Machine
+    login:<input type="text" name="user"/>
+    mot de passe:<input type="password" name="password"/>
+    <button type="submit" class="btn btn-outline-success">Confirmer l'ajout</button>
+</form>
+{% endblock %}

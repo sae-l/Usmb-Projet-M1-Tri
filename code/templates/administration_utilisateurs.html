@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block head %}
+    <script type="text/javascript" src="{{ url_for('static',filename='js/tableau.js') }}"></script>
+    <title>Administration des Utilisateurs</title>
+    <style>
+        table.dataTable{border-collapse:collapse !important;}
+    </style>
+{% endblock %}
+{% block body %}
+<h1 class="h1 text-dark">Administration des Utilisateurs</h1>
+<button type="button" class="btn btn-info" data-toggle="collapse" data-target="#add_user">Ajouter un Utilisateur</button>
+<form action="/ajouter_utilisateur" method="POST">
+    {{ form.csrf_token }}
+    <div id="add_user" class="collapse in">
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="inputName">Nom</label>
+                <input type="text" class="form-control" name="inputName" pattern="^[a-zA-ZÀ-ÿ]{1,}$" placeholder="Nom" required>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="inputFirstName">Prénom</label>
+                <input type="text" class="form-control" name="inputFirstname" pattern="^[a-zA-ZÀ-ÿ]{1,}$" placeholder="Prénom" required>
+            </div>
+            <div class="form-group col-md-4">
+                    <label for="inputUid">Uid</label>
+                    <input type="text" class="form-control" name="inputUid" pattern="^\w{1,}$" placeholder="Uid" required>
+            </div>
+        </div>
+        <div class="form-row">
+        <div class="form-group col-md-6">
+                <label for="inputClasse">Classe</label>
+                <select class="form-control" name="inputClasse">
+                {% for groupe in groupes %}
+                  <option>{{groupe[1]}}</option>
+                {% endfor%}                
+                </select>
+                </div>
+        <div class="form-group col-md-6">
+            <label for="inputGroupe">Groupe</label>
+            <input type="text" class="form-control" pattern="^[a-zA-ZÀ-ÿ0-9]{1,}$" name="inputGroupe" placeholder="Groupe" requiredo>
+        </div>
+    </div>    
+    Info de connection à Base Machine
+    <br>
+    login:<input type="text" name="user" id="user" required/>
+    mot de passe:<input type="password" name="password" id="password" required/>
+    <br>
+    <button type="submit" class="btn btn-success">Ajouter l'utilisateur</button>
+</div>
+<br>
+</form>
+<form action="/supprimer_utilisateur" id="Suppression" onsubmit="return confirm('Voulez-vous vraiment supprimer les utilisateurs ?');" method="POST">{{ form.csrf_token() }}</form>
+<table id="tab" class="display table table-light compact table-sm table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>À supprimer</th>
+            <th>Nom</th>
+            <th>Prenom</i></th>
+            <th>Uid</i></th>
+            <th>Classe</th>
+            <th>Groupe</th>
+            <th>Nb de Vms</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    
+        {% for user in users %}
+            <tr>
+                <td>
+                    <input type="checkbox" form="Suppression" name="supprime-{{user.uid}}" value="{{user.uid}}">
+                </td>
+                <td>{{user.nom }}</td>
+                <td>{{user.prenom }}</td>
+                <td>{{user.uid}}</td>
+                <td>{{user.classe}}</td>
+                <td>{{user.groupe}}</td>
+                <td>{{user.machines_Virtuelles|length}}</td>
+                <td>
+                    <form action="/ajouter_vm" method="POST">{{ form.csrf_token }}<input type="hidden" name="uid" value="{{user.uid}}"><input class="btn btn-outline-success btn-sm btn-block" type=submit value="Ajouter une Vm"></form>
+
+                </td>
+            </tr>
+        {%endfor%}
+    </tbody>
+</table>
+<br>
+<div class="form-check">
+    <input class="form-check-input" form="Suppression" type="checkbox" name="removeDossier" value="True" id="defaultCheck1">
+    <label class="form-check-label" for="defaultCheck1">Voulez-vous suppimer les dossiers sur les serveurs</label>
+</div>
+<input class="btn btn-outline-danger" type=submit value="Supprimer les Utilisateurs" form="Suppression" >
+{% endblock %}

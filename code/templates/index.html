@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block head %}
+    <title>Configuration des Machines</title>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/tableau.js') }}"></script>
+    <style>
+        table.dataTable{border-collapse:collapse !important;}
+    </style>
+{% endblock %}
+{% block body %}
+    <h1 class="h1 text-dark">Configuration des Machines</h1>
+    <table id="tab" class="display table table-light table-sm table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th rowspan="2" scope="col" id="name_header">Nom</th>
+                <th rowspan="2" scope="col" id="firstname_header">Prenom</th>
+                <th rowspan="2" scope="col" id="uid_header" >Uid</th>
+                <th rowspan="2" scope="col" id="classe_header">Classe</th>
+                <th rowspan="2" scope="col">Groupe</th>
+                <th scope="col" colspan="6">Machines Virtuelles</th>
+            </tr>
+            <tr>
+                <th scope="col" >Serveur</th>
+                <th scope="col">Nom</th>
+                <th scope="col">Adresse Mac</th>
+                <th scope="col">Adresse IP</th>
+                <th scope="col">Port RDP</th>
+                <th scope="col">Commentaire</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                {% for vm in user.machines_Virtuelles%}
+                    <tr>
+                        <td>{{user.nom }}</td>
+                        <td>{{user.prenom }}</td>
+                        <td>{{user.uid}}</td>
+                        <td>{{user.classe}}</td>
+                        <td>{{user.groupe}}</td>
+                        <td>{{vm.serveurs.nom}}</td>
+                        <td>{{vm.nom}}</td>
+                        <td>{{vm.adresse_MAC}}</td>
+                        <td>{{vm.adresse_IP}}</td>
+                        <td>{{vm.port_RDP}}</td>
+                        <td>{{vm.commentaire}}</td>
+                    </tr>
+                {%endfor%}
+            {%endfor%}
+        </tbody>
+    </table>
+{% endblock %}

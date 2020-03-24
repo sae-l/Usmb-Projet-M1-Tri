@@ -1,0 +1,13 @@
+gunicorn
+configparser>=4.0.2
+Flask>=1.1.1
+Flask-Bootstrap>=3.3.7.1
+Flask-Login>=0.4.1
+Flask-SQLAlchemy>=2.4.1
+Flask-WTF>=0.14.2
+openpyxl>=3.0.2
+paramiko>=2.7.1
+python-ldap>=3.2.0
+Unidecode>=1.1.1
+WTForms>=2.2.1
+requests

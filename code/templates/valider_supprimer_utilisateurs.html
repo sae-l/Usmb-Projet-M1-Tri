@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block head %}
+<title>Validation Ajout Utilisateur</title>
+
+<script type="text/javascript" src="{{ url_for('static',filename='js/tableau.js') }}"></script>
+<style>
+    table.dataTable{border-collapse:collapse !important;}
+</style>
+
+{% endblock %}
+{% block body %}
+
+
+<h1 class="h1 text-dark">Etudiants supprimés</h1>
+<form action="/bonjour" method="POST">
+    {{ form.csrf_token }}
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="selectallSupp" value="Tout Selectionner"/><label class="form-check-label" id="selectalllabelSuppr"> Tout Selectionner</label>
+    </div>
+    <table id="Supptab" class=" display dtable table table-sm table-light table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col" id="uid_header" >UID </th>
+                <th scope="col" id="name_header">Nom </th>
+                <th scope="col" id="firstname_header">Prenom </th>
+                <th scope="col" id="classe_header">Groupe Classe</th>
+                <th scope="col" id="groupe_header">Groupe LDAP </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr class='Supptr table-danger'>
+                {% for d in user %}
+                <td>{{d}}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</form>
+<br>
+<div class="form-check">
+    <input class="form-check-input" type="checkbox" form="formValiderUserSecret" name="removeDossier" value="True" id="defaultCheck1">
+    <label class="form-check-label" for="defaultCheck1">Voulez-vous suppimer les dossiers sur les serveurs</label>
+</div>
+<input type="button" class="btn col-sm-2 btn-danger"  id="submittablebutton" value="Supprimer"/><br/>
+
+<form action="/suppression_utilisateurs_bdd" id="formValiderUserSecret" method="POST">
+    {{ form.csrf_token }}
+    <input type="hidden" name="data" id="json" value=""> 
+</form>
+
+<script>
+$(document).ready(function() {
+    var supptable = $('#Supptab').DataTable();
+
+    $('#selectallSupp').click( function() {
+        if($(this)[0].checked){
+            $('#selectalllabelSupp').text("Désélectionner Tout");
+            $('.Supptr').addClass('table-danger');
+        } else {
+            $('#selectalllabelSupp').text("Sélectionner Tout");
+            $('.Supptr').removeClass('table-danger');
+        }
+    } );
+    
+    $('#Supptab tbody').on( 'click', 'tr', function () {
+        $(this).toggleClass('table-danger');
+    } );
+
+    $('#submittablebutton').click( function() {
+        //Tableau à envoyer a la fin
+        var arrEtu = [];
+
+        //Cas du tableau "Supp"
+        var dataSupp = supptable.rows('.table-danger').data();
+
+        for (let i = 0; i < dataSupp.length; i++) {
+            arrEtu.push(dataSupp[i]);
+        }       
+
+        var json = JSON.stringify(arrEtu);                
+
+        document.getElementById('json').value = json;
+        document.getElementById("formValiderUserSecret").submit(); 
+    } );
+} );
+
+</script>
+{% endblock %}

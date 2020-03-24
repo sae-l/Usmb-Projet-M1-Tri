@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block head %}
+<title>Création des utilisateurs</title>
+{% endblock %}
+
+{% block body %}
+<h1>Création des utilisateurs</h1>
+<form action="/ajouter_utilisateurs" method="POST" enctype="multipart/form-data" id="monform">
+    {{ form.csrf_token }}
+    <p>La requête ldap sur le serveur "<b>{{data[0][1]}}</b>" se fera sous l'uid <b>{{ session['username'] }}</b></p>
+    <br>
+    <p>Veuillez choir les groupes à ajouter:</p>
+    <!--<div id="groupeadd">
+        <label>Nom du groupe n°1
+            <input type="text" name="grp1" class="form-control" required="true"> 
+        </label>
+        <label>
+            <input type="file" name="grp1" accept=".xls,.xlsx"/>
+        </label>
+        <label>
+            <input type="button" class="groupaddbutton" value="Ajouter groupe"/>
+        </label>
+    </div>-->
+    {% for options in data2 %}
+        <div class="form-check ">
+            <input class="form-check-input" id="myCheckbox"  name="{{options[1]~'-chk'}}" type="checkbox" id="gridCheck">
+            <label class="form-check-label" for="gridCheck">
+                <label >{{options[1]}}
+                    <input type="file" name={{options[1]}} accept=".xls,.xlsx">
+                </label>
+            </label>
+        </div>
+        {%endfor%}
+        <br/>
+    <div class="form-group row">
+
+            <label class="col-sm-3 col-form-label">Mot de passe pour la connection au ldap:</label>
+            <div class="col-sm-2">
+                <input type="password" name="pwd" class="form-control" required> 
+            </div>
+        </div>
+        <input class="col-sm-2 btn btn-outline-success btn-block"type="submit" value="Ajouter les groupes">
+</form>
+<script>
+    /*$(document).ready(function() {
+        var wrapper = $("#groupeadd");
+        var add_button = $(".groupaddbutton");
+
+        var x = 2;
+        $(add_button).click(function(e) {
+            var txt = '<div><label>Nom du groupe n°'+x+'<input type="text" name="grp" class="form-control" required="true"> </label><label><input type="file" name="grp" accept=".xls,.xlsx"/></label><label></label><input type="button" class="deletegroupbutton" value="Supprimer"/></div>'
+            e.preventDefault();
+            x++;
+            $(wrapper).append(txt);
+        });
+
+        $(wrapper).on("click", ".deletegroupbutton", function(e) {
+            e.preventDefault();
+            $(this).parent('div').remove();
+        })
+    });*/
+
+    $(document).ready(function(){
+        $("form input:checkbox").click(function(){
+            var filechk = $(this).attr("name").slice(0,-4);
+            if($("input[name="+filechk+"]").attr("required")=="required"){
+                $("input[name="+filechk+"]").removeAttr('required');
+            }else{
+                $("input[name="+filechk+"]").attr("required",true);
+            }
+          });
+    });
+    </script>
+{% endblock %}
